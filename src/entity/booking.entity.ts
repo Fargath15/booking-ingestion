@@ -23,6 +23,6 @@ export class Booking extends BaseEntity {
   @Column("timestamptz", { name: "created_at", nullable: false })
   created_at!: Date;
 
-  @Column("timestamptz", { name: "updated_at", nullable: false })
+  @Column("timestamptz", { name: "updated_at", nullable: true })
   updated_at!: Date;
 }

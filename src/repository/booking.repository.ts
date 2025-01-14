@@ -37,7 +37,7 @@ export class BookingRepository {
   }
 
   async searchBooking(filter: ISearchBooking): Promise<Booking[]> {
-    let query: string = "";
+    let query: string = "SELECT * FROM booking ";
     let params: any[] = [];
 
     if (filter.booking_date) {
