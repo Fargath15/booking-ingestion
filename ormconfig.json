@@ -2,11 +2,11 @@
   {
     "name": "default",
     "type": "postgres",
-    "host": "dpg-cu32o2hopnds73817dig-a.singapore-postgres.render.com",
+    "host": "localhost",
     "port": 5432,
-    "username": "booking_main_db",
-    "password": "c7g4K3JPZffQkubLIIQeX7Eob0QC6pZB",
-    "database": "booking_main_db",
+    "username": "",
+    "password": "",
+    "database": "",
     "schema": "public",
     "synchronize": true,
     "logging": false,
@@ -14,7 +14,6 @@
     "entities": ["dist/entity/**/*.js"],
     "subscribers": ["src/subscriber/*.js"],
     "migrations": ["src/migration/*.js"],
-    "ssl": true,
     "cli": {
       "entitiesDir": "src/entity",
       "migrationsDir": "src/migration",
