@@ -34,6 +34,7 @@ export class ConnectionService {
       if (process.env.DB_USER) {
         option.username = process.env.DB_USER;
       }
+      console.log(option);
       ConnectionService.mActiveConnection[option.name] = await this.initializeConnection(option);
     } else {
       ConnectionService.mActiveConnection["default"] = await this.initializeConnection({

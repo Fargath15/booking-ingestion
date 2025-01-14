@@ -27,6 +27,11 @@ export class BookingRepository {
     return booking as Booking;
   }
 
+  async getAllBookings(): Promise<Booking[]> {
+    const bookings = await this.mRepository.find({});
+    return bookings as Booking[];
+  }
+
   async deleteBookingById(booking_uid: string): Promise<boolean> {
     const bookingItem = await this.getBookingByUid(booking_uid);
     if (bookingItem) {
@@ -131,6 +136,8 @@ export class BookingRepository {
       query += dateFilterQuery.query;
       params = dateFilterQuery.params;
     }
+
+    console.log(query, params);
 
     const data: Booking[] = await this.mRepository.query(query, params);
     return data;

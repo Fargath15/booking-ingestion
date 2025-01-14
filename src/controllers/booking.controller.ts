@@ -26,8 +26,10 @@ export class BookingController extends BaseController {
       async (req: express.Request, res: express.Response) => await this.addBooking(req, res)
     );
 
-    router.get(
-      "/bookings",
+    router.get("/bookings", async (req: express.Request, res: express.Response) => await this.getBookings(req, res));
+
+    router.post(
+      "/search-bookings",
       async (req: express.Request, res: express.Response, next: express.NextFunction) => await this.validateGetBookings(req, res, next),
       async (req: express.Request, res: express.Response) => await this.getBookings(req, res)
     );
@@ -49,7 +51,7 @@ export class BookingController extends BaseController {
     const data: IAddBookingRequest = req.body as IAddBookingRequest;
     const { error, value } = addBookingSchemaValidate.validate(data);
     if (error) {
-      res.status(401).send(error?.message);
+      res.status(400).send(error?.message);
     } else {
       next();
     }
@@ -59,27 +61,27 @@ export class BookingController extends BaseController {
     const data: ISearchBooking = req.body as ISearchBooking;
     const { error, value } = searchBookingSchemaValidate.validate(data);
     if (error) {
-      res.status(401).send(error?.message);
+      res.status(400).send(error?.message);
     } else {
       next();
     }
   }
 
   async validateGetBooking(req: express.Request, res: express.Response, next: express.NextFunction) {
-    const id: string = req.params?.id as string;
-    const { error, value } = getBookingSchemaValidate.validate(id);
+    const booking_uid: string = req.query?.booking_uid as string;
+    const { error, value } = getBookingSchemaValidate.validate(booking_uid);
     if (error) {
-      res.status(401).send(error?.message);
+      res.status(400).send(error?.message);
     } else {
       next();
     }
   }
 
   async validateDeleteBooking(req: express.Request, res: express.Response, next: express.NextFunction) {
-    const id: string = req.params?.id as string;
-    const { error, value } = deleteBookingSchemaValidate.validate(id);
+    const booking_uid: string = req.query?.booking_uid as string;
+    const { error, value } = deleteBookingSchemaValidate.validate(booking_uid);
     if (error) {
-      res.status(401).send(error?.message);
+      res.status(400).send(error?.message);
     } else {
       next();
     }
@@ -100,6 +102,17 @@ export class BookingController extends BaseController {
 
   public async getBookings(req: express.Request, res: express.Response) {
     try {
+      const bookings: Booking[] = await this.GetBookingRepository().getAllBookings();
+      const response: IResponse<Booking[]> = { status: ReponseStatus.Success, data: bookings };
+      res.status(201).send(response);
+    } catch (error: any) {
+      const response: IResponse<Booking[]> = { status: ReponseStatus.Failed, message: new Error(error)?.message };
+      res.status(500).send(response);
+    }
+  }
+
+  public async searchBookings(req: express.Request, res: express.Response) {
+    try {
       const filter: ISearchBooking = req.body as ISearchBooking;
       const bookings: Booking[] = await this.GetBookingRepository().searchBooking(filter);
       const response: IResponse<Booking[]> = { status: ReponseStatus.Success, data: bookings };
@@ -112,7 +125,7 @@ export class BookingController extends BaseController {
 
   public async getBooking(req: express.Request, res: express.Response) {
     try {
-      const booking_uid: string = req.params?.booking_uid as string;
+      const booking_uid: string = req.query?.booking_uid as string;
       const booking: Booking = await this.GetBookingRepository().getBookingByUid(booking_uid);
       let response: IResponse<Booking>;
       if (!booking) {
@@ -129,7 +142,7 @@ export class BookingController extends BaseController {
 
   public async deleteBooking(req: express.Request, res: express.Response) {
     try {
-      const booking_uid: string = req.params?.booking_uid as string;
+      const booking_uid: string = req.query?.booking_uid as string;
       const booking: boolean = await this.GetBookingRepository().deleteBookingById(booking_uid);
       let response: IResponse<Booking>;
       if (!booking) {
