@@ -19,12 +19,32 @@ export class ConnectionService {
       process.exit(1);
     }
     if (option) {
+      if (process.env.DB_HOST) {
+        option.host = process.env.DB_HOST;
+      }
+      if (process.env.DB_PORT) {
+        option.port = parseInt(process.env.DB_PORT ? process.env.DB_PORT.toString() : "5432");
+      }
+      if (process.env.DB_PASSWORD) {
+        option.password = process.env.DB_PASSWORD;
+      }
+      if (process.env.MAIN_DB) {
+        option.database = process.env.MAIN_DB;
+      }
+      if (process.env.DB_USER) {
+        option.username = process.env.DB_USER;
+      }
       ConnectionService.mActiveConnection[option.name] = await this.initializeConnection(option);
     } else {
-      ConnectionService.mActiveConnection["default"] = await new DataSource({
+      ConnectionService.mActiveConnection["default"] = await this.initializeConnection({
         type: "postgres",
         name: "default",
-      }).initialize();
+        host: process.env.DB_HOST,
+        port: parseInt(process.env.DB_PORT ? process.env.DB_PORT.toString() : "5432"),
+        username: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.MAIN_DB,
+      });
     }
     return ConnectionService.mActiveConnection[option.name];
   }
